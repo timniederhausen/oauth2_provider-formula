@@ -1,0 +1,6 @@
+oauth2_proxy:
+  bin_file:
+    source: http://example.com/nonexistant
+  service: oauth2_proxy
+  service_enabled: true
+  config: {}

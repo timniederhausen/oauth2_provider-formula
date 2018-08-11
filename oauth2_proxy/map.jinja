@@ -1,0 +1,16 @@
+{% import_yaml 'oauth2_proxy/defaults.yaml' as defaults %}
+{% import_yaml 'oauth2_proxy/osmap.yaml' as osmap %}
+
+{# get the settings for the os_family grain #}
+{% set osfam = salt['grains.filter_by'](osmap) or {} %}
+
+{# merge the os family/codename specific data over the defaults #}
+{% do defaults.oauth2_proxy.update(osfam) %}
+
+{# merge the pillar:lookup dict into the defaults/os specific dict #}
+{% set lookup = salt['pillar.get']('oauth2_proxy:lookup',
+                                   default=defaults.oauth2_proxy,
+                                   merge=True) %}
+
+{# merge the actual oauth2_proxy pillar into the above combined dict #}
+{% set oauth2_proxy = salt['pillar.get']('oauth2_proxy', default=lookup, merge=True) %}

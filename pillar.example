@@ -1,0 +1,3 @@
+oauth2_proxy:
+  config:
+    provider: olympia

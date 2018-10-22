@@ -6,7 +6,16 @@ oauth2_proxy_bin:
     - name: {{ oauth2_proxy.bin_path }}
     - owner: root
     - group: {{ oauth2_proxy.root_group }}
+    - mode: 755
     {{ sls_block(oauth2_proxy.bin_file) | indent(4) }}
+
+oauth2_proxy_user:
+  user.present:
+    - name: {{ oauth2_proxy.user }}
+    - fullname: oauth2_proxy Owner
+    - shell: /usr/sbin/nologin
+    - home: {{ oauth2_proxy.workdir }}
+    - system: true
 
 oauth2_proxy_config:
   file.managed:
@@ -17,15 +26,7 @@ oauth2_proxy_config:
     - mode: 640
     - template: jinja
     - context:
-        sections: {{ oauth2_proxy.config | yaml }}
-
-oauth2_proxy_user:
-  user.present:
-    - name: {{ oauth2_proxy.user }}
-    - fullname: oauth2_proxy Owner
-    - shell: /usr/sbin/nologin
-    - home: {{ oauth2_proxy.workdir }}
-    - system: true
+        config: {{ oauth2_proxy.config | yaml }}
 
 oauth2_proxy_workdir:
   file.directory:
@@ -37,7 +38,7 @@ oauth2_proxy_workdir:
 oauth2_proxy_service_script:
   file.managed:
     - name: /usr/local/etc/rc.d/{{ oauth2_proxy.service }}
-    - source: salt://buildbot/files/freebsd-rc.sh
+    - source: salt://oauth2_proxy/files/freebsd-rc.sh
     - template: jinja
     - mode: 755
     - context:
@@ -53,14 +54,13 @@ oauth2_proxy_service:
   service.{{ service_function }}:
     - name: {{ oauth2_proxy.service }}
     - enable: {{ oauth2_proxy.service_enabled }}
-    - reload: True
     - watch:
       - file: oauth2_proxy_bin
       - file: oauth2_proxy_config
     - require:
       - file: oauth2_proxy_bin
       - file: oauth2_proxy_config
-      - file: oauth2_proxy_user
+      - user: oauth2_proxy_user
       - file: oauth2_proxy_workdir
 {% if grains.os_family == 'FreeBSD' %}
       - file: oauth2_proxy_service_script

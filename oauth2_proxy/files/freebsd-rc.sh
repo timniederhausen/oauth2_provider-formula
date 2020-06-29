@@ -20,9 +20,10 @@ load_rc_config {{ fullname }}
 required_dirs={{ directory }}
 
 pidfile={{ directory }}/daemon.pid
+logfile=/var/log/{{ fullname }}.log
 procname={{ executable }}
 command=/usr/sbin/daemon
-command_args="-p ${pidfile} -f ${procname} -config={{ config }}"
+command_args="-p ${pidfile} -f ${procname} -o ${logfile} -config={{ config }}"
 
 start_precmd="oauth2_proxy_precmd"
 

@@ -23,13 +23,14 @@ pidfile={{ directory }}/daemon.pid
 logfile=/var/log/{{ fullname }}.log
 procname={{ executable }}
 command=/usr/sbin/daemon
-command_args="-p ${pidfile} -f ${procname} -o ${logfile} -config={{ config }}"
+command_args="-p ${pidfile} -o ${logfile} -f ${procname} --config={{ config }}"
 
 start_precmd="oauth2_proxy_precmd"
 
 oauth2_proxy_precmd()
 {
     install -o {{ user }} /dev/null ${pidfile}
+    install -o {{ user }} /dev/null ${logfile}
 
     export PATH="${PATH}:/usr/local/bin:/usr/local/sbin"
     cd {{ directory }}

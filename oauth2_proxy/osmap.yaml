@@ -4,7 +4,4 @@ FreeBSD:
   user: oauth2_proxy
   workdir: /var/run/oauth2_proxy
   root_group: wheel
-  config:
-    global:
-      - pid: run/php-fpm.pid
-      - include: /usr/local/etc/php-fpm.d/*.conf
+  config: {}
